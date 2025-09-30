@@ -134,8 +134,3 @@ package-name/
 ---
 
 This keeps your project organized, reproducible, and ready for use in VSCode.  
-
-## Running jobs on Slurm using the .venv
-
-When running a job, if you want to use the environment specified in your `pyproject.toml` use
-`uv run --project /path/to/your/project python path/to/my_script.py`
