@@ -1,4 +1,4 @@
-# Setting Up Your Lab Python Project with `uv` on Sherlock
+# Setting Up Your Lab Python Project with `uv` on Sherlock (Stanford's computing cluster)
 
 These instructions are aimed at getting a reproducible `.venv` for your project and making it easier to use in VSCode notebooks.  The two challenges I tend to run into are (1) `uv` doesn't use the version of python I'd like it to and (2) The `.venv` cannot be found by VSCode.  To solve problem (2) your best bet is to get the package started up to the point that you have a `.venv` and only then should you fire up the Code Server on Sherlock.
 
