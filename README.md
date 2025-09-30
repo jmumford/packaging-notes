@@ -3,10 +3,11 @@
 
 
 
-Created: January 4, 2025 12:53 PM
+Updated: September 29, 2025 
 
-Will probably be obsolete: January 31, 2025
+Will probably be obsolete: October 31, 2025
 
+⚠️ Quick ChatGPT (or whatever LLM) warning:  In my experience (as of 9/29/2025) these resources do *not* always give great advice on using `uv`.  If the ever suggest activating the environment and making changes I DO NOT recommend this.  It will almost always result in a `pyproject.toml` that doesn't align with the `.venv`, which somewhat defeats the purpose of having a `pyproject.toml`.  In this case, go old school and look the help documentation for `uv` directly or get sassy with your LLM about giving better advice. 
 
 - [Introduction](#introduction)
 - [Dive in: A step-by-step toy example](#dive-in-a-step-by-step-toy-example)
@@ -27,6 +28,7 @@ Will probably be obsolete: January 31, 2025
   - [UV](#uv)
     - [Why is UV so great?](#why-is-uv-so-great)
     - [Basics to get started](#basics-to-get-started)
+    - [Helpful more advanced `git add` examples](#helpful-more-advanced-git-add-examples)
   - [Ruff](#ruff-1)
   - [Pytest](#pytest-1)
     - [Integrate Pytest with github via a workflow](#integrate-pytest-with-github-via-a-workflow)
@@ -87,7 +89,7 @@ Assumption: VS Code, Ruff and pre-commit are installed and I’m using a Mac.  I
     uv add pandas numpy
     uv add --dev pytest ipykernel
     ```
-    
+    - Advance uv adds are below (directly from github repos and from local cloned repos in editable mode)
 
 ## Ruff
 
@@ -486,6 +488,16 @@ These are common commands and descriptions for files that are created/used.
         - The temporary environment only includes whatever dependency is needed for the command that is being run (e.g., to run ruff, it will temporarily install ruff and run it)
         - If you need other dependencies within the package’s environment, use `uv run` instead
         - Why would you use this?  If you don’t already have the .venv for your package and you’re just running something simple, uvx run may be faster.
+
+### Helpful more advanced `git add` examples
+- You should never activate the `.venv` to add a package or use `uv pip install` because it is likely creating a mismatch between your `pyproject.toml` and your local `.venv`, which interferes with reproducibility down the line. Here are two special git adds I find myself using a lot
+  - *Directly add a tool from github*
+    - `uv add git+https://github.com/jmumford/randomise-prep.git@6c73254`
+      - By using the commit hash you fix to that specific version
+  - *Add a local copy of a cloned (perhaps forked) repo in editable mode*
+      - Note, this does not live within the uv-controlled project you're adding it to!  Use case, I'm working on a PR for fitlins and my uv-controlled package contains code for testing my repairs.
+      - `uv add --editable path/to/local/copy/forked/fitlins/`
+
 
 ## Ruff
 
