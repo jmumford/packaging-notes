@@ -96,17 +96,27 @@ This makes your code reproducible without manually managing a virtual environmen
 ## 5️⃣ Open VSCode and Select the `.venv`
 
 1. Open the Sherlock code server and set the workspace to your project directory.  
-2. Wait patiently while Sherlock starts your interactive session.
+2. Wait while Sherlock starts your interactive session.  
 3. Once it begins, start the session and create a notebook or open an existing one.  
-4. Click **Select Kernel** at the top and choose the `.venv/bin/python` kernel created by uv.  
+4. Click Select Kernel at the top and choose the `.venv/bin/python` kernel created by uv.  
 
 > If VSCode doesn’t immediately recognize the `.venv`, restart the code server. Setting up `.venv` before opening VSCode usually fixes this.  
 
 ---
 
-## 6️⃣ Organizing Your Project
+## 6️⃣ Running Jobs on Slurm with `.venv`
 
-I recommend this layout:
+To run a script on SLURM using the environment defined in your `pyproject.toml`, use:
+
+`uv run --project /path/to/your/project python path/to/my_script.py`
+
+This ensures the job uses the `.venv` created by uv, even when running outside VSCode or Jupyter.  
+
+---
+
+## 7️⃣ Organizing Your Project
+
+A suggested layout:
 
 ```
 package-name/
@@ -124,3 +134,8 @@ package-name/
 ---
 
 This keeps your project organized, reproducible, and ready for use in VSCode.  
+
+## Running jobs on Slurm using the .venv
+
+When running a job, if you want to use the environment specified in your `pyproject.toml` use
+`uv run --project /path/to/your/project python path/to/my_script.py`
