@@ -1,136 +1,179 @@
-# Setting Up Your Lab Python Project with `uv` on Sherlock (Stanford's computing cluster)
+# Setting Up Your Lab Python Project with `uv` on Sherlock
 
-These instructions are aimed at getting a reproducible `.venv` for your project and making it easier to use in VSCode notebooks.  The two challenges I tend to run into are (1) `uv` doesn't use the version of python I'd like it to and (2) The `.venv` cannot be found by VSCode.  To solve problem (2) your best bet is to get the package started up to the point that you have a `.venv` and only then should you fire up the Code Server on Sherlock.
+These instructions will help you create a reproducible Python environment (`.venv`) for your project and make it usable in VSCode notebooks.  
 
-Of course there may be better ways to get things to work smoothly, this is just where I landed.  If you have tips/tricks, please share!
+Two common pitfalls when using `uv` on Sherlock:  
 
-⚠️ Quick ChatGPT (or whatever LLM) warning:  In my experience (as of 9/29/2025) these resources do *not* always give great advice on using `uv`.  If the ever suggest activating the environment and making changes I DO NOT recommend this.  It will almost always result in a `pyproject.toml` that doesn't align with the `.venv`, which somewhat defeats the purpose of having a `pyproject.toml`.  In this case, go old school and look the help documentation for `uv` directly or get sassy with your LLM about giving better advice. 
+1. `uv` might not use your preferred Python version.  
+2. VSCode sometimes cannot detect the `.venv` automatically.  
+
+The workflow below avoids both issues by preparing your `.venv` **before** opening VSCode.  
+
+> ⚠️ Warning: Advice from LLMs or online resources about modifying a `uv` environment **after activation** can be misleading. Changing the environment manually may break the alignment between `.venv` and `pyproject.toml`. When in doubt, check `uv --help`.
 
 ---
 
-## 1️⃣ Prepare Your Environment
+## ⚡ Quick Start
 
-Before opening VSCode, make sure you have a reasonable Python and GCC version available. Add the following to your `.bash_profile`:
+1. Source your project setup (described below):
+```bash
+source /path/to/project/setup_uv_sherlock.sh
+```
+
+2. Initialize the project (if new):
+```bash
+cd /path/to/projects
+uv init --package my_project
+```
+
+3. Install dependencies:
+```bash
+cd my_project
+uv add pandas numpy matplotlib
+```
+
+4. Run your script on SLURM:
+```bash
+uv run --project /path/to/my_project python analysis_code/my_script.py
+```
+
+5. Open VSCode and select `.venv/bin/python` as kernel.
+
+---
+## Full Setup
+---
+
+
+### 1️⃣ Prepare Your Environment via `setup_uv_sherlock.sh`
+
+Instead of modifying your `.bash_profile`, create a project-specific shell script:
 
 ```bash
+#!/bin/bash
+# setup_uv_sherlock.sh - load modules and configure uv
+
+# Set default permissions: files and directories are group-readable and group-writable
+# IMPORTANT: POLDRACK LAB MEMBERS should set this in their .bash_profile!
+# Ensures shared projects and the central UV_CACHE are accessible to all lab members
+# A coworker won't be able update a uv_cache in a shared project if you do not do this
+umask 0006
+
+# Load required modules for your work (varies by project)
+module load fsl
 module load python/3.12.1
 module load gcc/12.4.0
+module load uv
+
+# Tell uv which Python to use (this will correspond to module loaded version)
+export UV_PYTHON=$(which python3)
+
+# Use a central uv cache for reproducibility
+export UV_CACHE_DIR="/oak/stanford/groups/russpold/uv_cache_pool/uv_cache_jmumford"
 ```
 
-Then reload your profile (note you don't have to run this again in the future it runs automatically whenever you start a new session):
+**⚠️![Russ](./images/russ_face.png) Attention – Poldrack Lab Members:** Please set `umask 0006` in your `.bash_profile`.
+
+**⚠️![Russ](./images/russ_face.png) Attention – Poldrack Lab Members:** You may use `/oak/stanford/groups/russpold/uv_cache_pool/uv_cache_USERNAME` as your `uv_cache` directory.  Otherwise it default to your home directory and can eat up a lot of space.  
+
+Use it in your shell session:
 
 ```bash
-source ~/.bash_profile
+source setup_uv_sherlock.sh
 ```
 
-Verify the Python version:
+Check your Python version:
 
 ```bash
-which python3   # should point to the module version
 python3 --version
 ```
 
-> Note: Sherlock can be finicky with Python and conda. Using `python3` (from the module) instead of `python` seems to avoid conflicts.  
+Where UV will default to python version and cache location
+```bash
+echo $UV_PYTHON
+echo $UV_CACHE_DIR
+```
 
 ---
 
-## 2️⃣ Initialize Your Project with `uv`
-
-Create a new project in your desired directory:
+### 2️⃣ Initialize Your Project
 
 ```bash
 cd /path/to/projects
-uv init --package package-name --python $(which python3)
+uv init --package analysis_directory_name 
 ```
 
-This creates:
+This creates:  
 
 - `pyproject.toml`  
-- `src/package_name` for your modules  
-- `.venv` will be created after adding packages  
+- `src/analysis_directory_name` for reusable modules  
+- `.venv` (after adding packages)  
 
-If you don't want your code base to be a package, just delete the `src` directory or use `uv init not-package --python $(which python3)`
-to initialize.
+> If your code is not a package, you can remove `src` or run `uv init analysis_directory_name`.
+
 ---
 
-## 3️⃣ Add Packages
-
-Install the packages you need for analysis (you can always add more later too!):
+### 3️⃣ Install Dependencies
 
 ```bash
-cd package-name
+cd analysis_directory_name
 uv add pandas numpy seaborn matplotlib
 ```
 
-### Troubleshooting Python Version Errors
-
-If you get errors about Python version mismatch, force uv to use the correct interpreter:
+For GitHub packages:
 
 ```bash
-uv add --python $(which python3) pandas numpy seaborn matplotlib
+uv add git+https://github.com/jmumford/randomise-prep.git@main
 ```
 
-### Adding Packages from GitHub
+> If you see “Failed to hardlink files,” it’s usually harmless.
 
-You can also add packages directly from GitHub:
+---
+
+### 4️⃣ Why `uv add` is Useful
+
+- Updates the local `.venv` automatically  
+- Updates `pyproject.toml` for reproducibility  
+
+No manual virtual environment management required.
+
+---
+
+### 5️⃣ Open VSCode and Select the `.venv`
+
+1. Launch the Sherlock code server after `.venv` was make and open your project directory.  
+2. Open a notebook.  
+3. Select the kernel corresponding to your `.venv/bin/python`.  
+
+> If VSCode doesn’t detect the `.venv`, restart the code server.
+
+---
+
+### 6️⃣ Running Scripts on SLURM
 
 ```bash
-uv add --python $(which python3) git+https://github.com/jmumford/randomise-prep.git@main
+source /path/to/project/setup_uv_sherlock.sh
+uv run --project /path/to/project python path/to/project/analysis/my_script.py
 ```
 
-> Note: Warnings about “Failed to hardlink files” are usually harmless.
+This ensures SLURM jobs use the same `.venv` as your notebooks and sourcing the `setup_uv_sherlock.sh` loads necessary modules and sets `$UV_PYTHON$` and `$UV_CACHE_DIR`.
 
 ---
 
-## 4️⃣ Why `uv add` is Useful
-
-`uv add` does two things for you:
-
-1. Creates and updates the local `.venv`.  
-2. Updates `pyproject.toml` so anyone can recreate your environment later.  
-
-This makes your code reproducible without manually managing a virtual environment.  
-
----
-
-## 5️⃣ Open VSCode and Select the `.venv`
-
-1. Open the Sherlock code server and set the workspace to your project directory.  
-2. Wait while Sherlock starts your interactive session.  
-3. Once it begins, start the session and create a notebook or open an existing one.  
-4. Click Select Kernel at the top and choose the `.venv/bin/python` kernel created by uv.  
-
-> If VSCode doesn’t immediately recognize the `.venv`, restart the code server. Setting up `.venv` before opening VSCode usually fixes this.  
-
----
-
-## 6️⃣ Running Jobs on Slurm with `.venv`
-
-To run a script on SLURM using the environment defined in your `pyproject.toml`, use:
-
-`uv run --project /path/to/your/project python path/to/my_script.py`
-
-This ensures the job uses the `.venv` created by uv, even when running outside VSCode or Jupyter.  
-
----
-
-## 7️⃣ Organizing Your Project
-
-A suggested layout:
+### 7️⃣ Suggested Project Layout
 
 ```
-package-name/
-├── src/package_name/      # reusable functions/modules
-├── analysis_code/
-│   ├── notebooks/         # .ipynb files
-│   └── scripts/           # .py scripts for analysis
+package_name/
+├── src/package_name/       # reusable modules
+├── analysis_code/          # notebooks and scripts
+├── slurm_logs              # A place to dump your slurm logs
 ├── pyproject.toml
-└── .venv/                 # virtual environment (created by uv)
+├── setup_uv_sherlock.sh    # environment setup script
+└── .venv/                  # virtual environment created by uv
 ```
 
-- Keep reusable code in `src/package_name`.  
-- Keep experiment scripts and notebooks separate in `analysis_code`.  
+- Keep reusable code in `src/`  
+- Keep experiment scripts and notebooks in `analysis_code/`  
+- Configure modules per project to avoid conflicts across projects  
 
 ---
 
-This keeps your project organized, reproducible, and ready for use in VSCode.  
