@@ -73,7 +73,7 @@ export UV_CACHE_DIR="/oak/stanford/groups/russpold/uv_cache_pool/uv_cache_jmumfo
 
 **⚠️![Russ](./images/russ_face.png) Attention – Poldrack Lab Members:** Please set `umask 0006` in your `.bash_profile`.
 
-**⚠️![Russ](./images/russ_face.png) Attention – Poldrack Lab Members:** You may use `/oak/stanford/groups/russpold/uv_cache_pool/uv_cache_USERNAME` as your `uv_cache` directory.  Otherwise it default to your home directory and can eat up a lot of space.  
+**⚠️![Russ](./images/russ_face.png) Attention – Poldrack Lab Members:** You may use `/oak/stanford/groups/russpold/uv_cache_pool/uv_cache_USERNAME` as your `uv_cache` directory.  Otherwise it defaults to your home directory and can eat up a lot of space.  
 
 Use it in your shell session:
 
