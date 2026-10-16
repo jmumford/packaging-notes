@@ -51,18 +51,18 @@ Other differences you'll notice:
 
 ## Reading order
 
-1. [Shell setup](01-shell-setup.md): one-time setup of your shell and uv's cache.
-2. [Starting a project](02-new-project.md): creating a project, adding packages, sharing it, and running it on Slurm.
-3. [VS Code, notebooks and Ruff](03-vscode.md): using your environment in notebooks and getting tidy code on save.
-4. [Optional extras](04-extras.md): pre-commit hooks, tests, and GitHub Actions.
-5. [Troubleshooting](05-troubleshooting.md): when things go sideways.
+1. [Shell setup](docs/01-shell-setup.md): one-time setup of your shell and uv's cache.
+2. [Starting a project](docs/02-new-project.md): creating a project, adding packages, sharing it, and running it on Slurm.
+3. [VS Code, notebooks and Ruff](docs/03-vscode.md): using your environment in notebooks and getting tidy code on save.
+4. [Optional extras](docs/04-extras.md): pre-commit hooks, tests, and GitHub Actions.
+5. [Troubleshooting](docs/05-troubleshooting.md): when things go sideways.
 
 ## How to read the callouts
 
 > [!WARNING]
 > **Sherlock workaround:** Boxes like this one describe workarounds for Sherlock's older hardware, which runs an old operating system that many current Python packages no longer support. These are temporary. When the older nodes are retired or upgraded, these steps should become unnecessary and the plain instructions will be enough.
 
-> ![Russ](./images/russ_face.png) **Poldrack lab:** Boxes like this one are lab-specific conventions. If you're not in the lab, you can skip them.
+> ![Russ](./docs/images/russ_face.png) **Poldrack lab:** Boxes like this one are lab-specific conventions. If you're not in the lab, you can skip them.
 
 ## What about containers?
 

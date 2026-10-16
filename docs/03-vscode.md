@@ -41,16 +41,14 @@ Then open the Extensions panel (the four-squares icon on the left), search for *
 
 ### Step 2: Turn on fix-on-save for this workspace
 
-Open the settings with `Cmd + ,` (Mac) or `Ctrl + ,` (Linux/Windows), click the **Workspace** tab (not **User**), and then click the small page icon with an arrow in the upper right to open the settings file.  For reference it looks like this
+Open the settings with `Cmd + ,` (Mac) or `Ctrl + ,` (Linux/Windows) and click the **Workspace** tab (not **User**). Then click the small page icon in the upper right to open the settings file:
 
 ![page_icon](./images/page_icon.png)
 
- This creates `.vscode/settings.json` in your project. Put this in it:
+This creates `.vscode/settings.json` in your project. Put this in it:
 
 ```json
 {
-    "ruff.importStrategy": "useBundled",
-    "ruff.path": ["/home/users/jmumford/.local/bin/ruff"],
     "notebook.formatOnSave.enabled": true,
     "notebook.formatOnCellExecution": true,
     "notebook.defaultFormatter": "charliermarsh.ruff",
@@ -70,6 +68,13 @@ Open the settings with `Cmd + ,` (Mac) or `Ctrl + ,` (Linux/Windows), click the 
 ```
 
 `fixAll` is the part that removes unused imports and applies other automatic fixes. `organizeImports` sorts your imports.
+
+> [!WARNING]
+> **Sherlock workaround:** On Sherlock, the Ruff extension can't find Ruff on its own in code-server, so tell it where Ruff lives. Add this line right after the opening `{`, replacing `YOURSUNETID` with your SUNet ID:
+> ```json
+> "ruff.path": ["/home/users/YOURSUNETID/.local/bin/ruff"],
+> ```
+> Not on Sherlock? Leave this line out. Ruff finds itself on its own elsewhere, and this path won't exist on your computer.
 
 Why Workspace and not User? I often work on other people's code, and I don't want my preferences rewriting their files. Putting the settings in the workspace keeps them to projects where I chose to use them.
 
