@@ -20,7 +20,6 @@ mkdir -p $SCRATCH/uv_cache
 
 Why scratch? In testing, installs were much faster with the cache on scratch than on Oak. Scratch purges files that haven't been used in a while, but that's fine. Your projects live elsewhere, and if the cache gets purged, uv just rebuilds it the next time you add or sync packages.
 
-> ![Russ](./images/russ_face.png) **Poldrack lab:** If you'd rather have a cache that never gets purged, you can use `/oak/stanford/groups/russpold/uv_cache_pool/uv_cache_$USER` instead. Expect slower installs.
 
 **Not on Sherlock?** You can skip this step. uv's default cache location is fine on a laptop.
 
@@ -33,8 +32,9 @@ Open `~/.bashrc` in a text editor and add this at the bottom:
 module load python/3.12.1
 module load gcc/12.4.0
 module load uv
-module load git    
-module load gh
+# --- git tools ---
+module load git    # needed so uv can set up .git and .gitignore for new projects
+module load gh     # optional: GitHub from the terminal (create repos, log in without juggling tokens)
 # FSL and other lab software (Poldrack lab only):
 # module load contribs
 # module load poldrack
@@ -54,7 +54,10 @@ export UV_LINK_MODE=copy
 
 What each part does:
 
-- **The modules** give you a modern Python, a compiler (some packages need to be built during install on Sherlock), and uv itself. Only load the modules you actually use. FSL is in there as an example.
+- **The uv setup modules** give you a modern Python, a compiler (some packages need to be built during install on Sherlock), and uv itself.
+- **The git tools:** `git` is required, because Sherlock's built-in git is from 2013 and uv needs a newer one to set up `.git` and `.gitignore` for new projects. `gh` is optional. It's GitHub's command-line tool, which lets you create repositories and log in to GitHub from the terminal (see [Starting a project](02-new-project.md#step-6-commit-uvlock-and-put-it-on-github)).
+- **The lab software modules** are only for Poldrack lab members who use FSL or other lab tools. Uncomment the lines you need. In general, only load the modules you actually use.
+- **`umask 0006`** makes the files you create readable and writable by your group, so others can work in shared projects.
 - **`UV_PYTHON`** tells uv to use the Python you just loaded. It has to come *after* the `module load python` line. Otherwise `which python3` finds the system Python.
 - **`UV_CACHE_DIR`** points uv at the cache from Step 1.
 - **`UV_LINK_MODE=copy`** stops uv from complaining that it can't hardlink between scratch and your project. If the cache and your projects are on the same filesystem, you can leave this out.
