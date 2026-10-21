@@ -23,7 +23,26 @@ Why scratch? In testing, installs were much faster with the cache on scratch tha
 
 **Not on Sherlock?** You can skip this step. uv's default cache location is fine on a laptop.
 
+
 ## Step 2: Add your settings to `~/.bashrc`
+
+> [!CAUTION]
+> **Temporary security notice (October 2026):** A certificate authority (eMudhra) was compromised, and uv versions older than 0.13.4 still trust its certificates. Sherlock's `uv` module is currently 0.10.8. Until Sherlock adds a fixed version (check with `module spider uv`), install your own uv instead:
+>
+> ```bash
+> curl -LsSf https://astral.sh/uv/install.sh | env UV_NO_MODIFY_PATH=1 sh
+> ```
+>
+> Then comment out `module load uv` in your `~/.bashrc` (`# module load uv`), log out and back in, and check that `uv --version` shows 0.13.4 or newer. Keep it updated with `uv self update`. Once Sherlock's module is 0.13.4 or newer, switch back to the module and delete `~/.local/bin/uv` and `~/.local/bin/uvx`.
+>
+> In existing projects, also update `certifi` if it's in your lock (check with `uv tree | grep certifi`):
+>
+> ```bash
+> uv lock --upgrade-package certifi
+> uv sync
+> ```
+>
+> More details: [emudhra.we-have-a-problem.com](https://emudhra.we-have-a-problem.com/)
 
 Open `~/.bashrc` in a text editor and add this at the bottom:
 
